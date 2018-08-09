@@ -1,10 +1,11 @@
-**THIS PROJECT IS UNMAINTAINED.**
+**A maintained fork of
+[nflgame](https://github.com/BurntSushi/nflgame/)**
 
 nflgame is an API to retrieve and read NFL Game Center JSON data.
 It can work with real-time data, which can be used for fantasy football.
 
 **PLEASE DO NOT EMAIL ME QUESTIONS. USE THE
-[ISSUE TRACKER](https://github.com/BurntSushi/nflgame/issues) TO ASK
+[ISSUE TRACKER](https://github.com/derek-adair/nflgame/issues) TO ASK
 QUESTIONS.**
 
 nflgame works by parsing the same JSON data that powers NFL.com's live
