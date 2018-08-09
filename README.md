@@ -72,7 +72,7 @@ And the output is:
 
 If you aren't a programmer, then the
 [tutorial for non
-programmers](https://github.com/BurntSushi/nflgame/wiki/Tutorial-for-non-programmers:-Installation-and-examples)
+programmers](https://github.com/derek-adair/nflgame/wiki/Tutorial-for-non-programmers:-Installation-and-examples)
 is for you!
 
 Also, nflgame has decent (but not perfect)
@@ -87,7 +87,7 @@ the captcha and hit connect.)
 
 Failing IRC, the second fastest way to get help is to
 [open a new issue on the
-tracker](https://github.com/BurntSushi/nflgame/issues/new).
+tracker](https://github.com/derek-adair/nflgame/issues/new).
 There are several active contributors to nflgame that watch the issue tracker.
 We tend to respond fairly quickly!
 
