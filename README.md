@@ -1,7 +1,9 @@
 A maintained fork of
 [nflgame](https://github.com/BurntSushi/nflgame/)
 ================
-**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** with the 2018 season data to date included.  **NOTE**: The scorestrip api seems to be depricated so downloading json data on demand is broken.
+**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** with the 2018 season data to date included.  
+
+**NOTE**: The scorestrip api seems to be depricated so downloading json data on demand is broken.
 
 nflgame is an API to retrieve and read NFL Game Center JSON data.
 It can work with real-time data, which can be used for fantasy football.
