@@ -96,7 +96,6 @@ def current_year_and_week():
     and week is the current week number of games being played.
     i.e., (2012, 3).
 
-    N.B. This always downloads the schedule XML data.
     """
     _update_week_number()
     return _cur_year, _cur_week
@@ -105,20 +104,23 @@ def current_year_and_week():
 def current_games(year=None, week=None, kind='REG'):
     """
     Returns a list of game.Games of games that are currently playing.
-    This fetches all current information from NFL.com.
 
     If either year or week is none, then the current year and week are
-    fetched from the schedule on NFL.com. If they are *both* provided, then
-    the schedule from NFL.com won't need to be downloaded, and thus saving
-    time.
+    calculated. If they are *both* provided, then the provided values are
+    used.
 
-    So for example::
+    So for example:
 
         year, week = nflgame.live.current_year_and_week()
         while True:
             games = nflgame.live.current_games(year, week)
             # Do something with games
             time.sleep(60)
+
+    NOTE: Providing both year and week was originally mainly a way to
+    prevent unnecessary calls to NFL.com. Now NFL.com is not called in
+    current_year_and_week() anyway. Some (pretty slim) calculation time
+    would still be saved, though.
 
     The kind parameter specifies whether to fetch preseason, regular season
     or postseason games. Valid values are PRE, REG and POST.
