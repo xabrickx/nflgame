@@ -26,16 +26,16 @@ with codecs.open(path.join(cwd, 'nflgame/version.py'), 'r', 'ascii') as f:
 assert version != '0.0.0'
 
 setup(
-    name='nflgame',
-    author='Andrew Gallant',
-    author_email='andrew@burntsushi.net',
+    name='nflgame-redux',
+    author='Derek Adair',
+    author_email='d@derekadair.comm',
     version=version,
     license='UNLICENSE',
     description='An API to retrieve and read NFL Game Center JSON data. '
                 'It can work with real-time data, which can be used for '
                 'fantasy football.',
     long_description=longdesc,
-    url='https://github.com/BurntSushi/nflgame',
+    url='https://github.com/derek-adair/nflgame',
     classifiers=[
         'License :: Public Domain',
         'Development Status :: 5 - Production/Stable',
