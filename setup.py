@@ -1,5 +1,5 @@
 import codecs
-from distutils.core import setup
+from setuptools import setup
 from glob import glob
 import os.path as path
 
