@@ -3,7 +3,7 @@ import nflgame
 
 ## Find the top 5 running backs by rushing yards in the first week of the 2013 season:
 
-games = nflgame.games(2013, week=1)
+games = nflgame.games(2017, week=1)
 players = nflgame.combine_game_stats(games)
 for p in players.rushing().sort('rushing_yds').limit(5):
     msg = '%s %d carries for %d yards and %d TDs'
@@ -11,7 +11,7 @@ for p in players.rushing().sort('rushing_yds').limit(5):
 
 ##Or you could find the top 5 passing plays in the same time period:
 
-games = nflgame.games(2013, week=1)
+games = nflgame.games(2017, week=1)
 plays = nflgame.combine_plays(games)
 for p in plays.sort('passing_yds').limit(5):
     print p
