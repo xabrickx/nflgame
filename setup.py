@@ -27,7 +27,7 @@ assert version != '0.0.0'
 
 setup(
     name='nflgame-redux',
-    author='Derek Adair',
+    author='Andrew Gallant',
     author_email='d@derekadair.comm',
     version=version,
     license='UNLICENSE',
