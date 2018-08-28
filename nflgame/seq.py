@@ -299,7 +299,7 @@ class GenPlayerStats (Gen):
         """
         import csv
 
-        fields, rows = {}, []
+        fields, rows = set([]), []
         players = list(self)
         for p in players:
             for field, stat in p.stats.iteritems():
