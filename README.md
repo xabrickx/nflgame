@@ -29,7 +29,7 @@ If you aren't a programmer, then the
 programmers](https://github.com/derek-adair/nflgame/wiki/Tutorial-for-non-programmers:-Installation-and-examples)
 is for you!
 
-Also, nflgame has decent (but not perfect)[API documentation](http://pdoc.derekadair.com/nflgame). If you're just looking around, make sure to look at the submodules as well.
+Also, nflgame has decent (but not perfect)[API documentation](http://nflgame.derekadair.com.s3-website-us-east-1.amazonaws.com/). If you're just looking around, make sure to look at the submodules as well.
 
 Feel free to [open a new issue on the
 tracker](https://github.com/derek-adair/nflgame/issues/new), which is currently the most expedient way to get support.
