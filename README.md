@@ -7,23 +7,20 @@ A maintained fork of
 nflgame is an API to retrieve and read NFL Game Center JSON data.
 It can work with real-time data, which can be used for fantasy football.
 
-### Installation and dependencies
+### Installation
 
 While a [python3 implementation is on our radar](https://github.com/derek-adair/nflgame/issues/2), this project **ONLY WORKS WITH PYTHON 2**
 
 nflgame-redux is in the
 [Python Package Index (PyPI)](http://pypi.python.org/pypi/nflgame-redux/).
-On all platforms, it is recommend to install it with `pip`:
+
+1. Install [virtualenv](https://virtualenv.pypa.io/en/stable/installation/) and make sure it's [activated](https://virtualenv.pypa.io/en/stable/userguide/).
+
+2. In your python 2.7 virtualenv...
 
 ```
 pip install nflgame-redux
 ```
-
-nflgame's core functionality can be used without any dependencies beyond the
-Python standard library, but `nflgame.live` depends on `pytz` and the
-`nflgame-update-players` script depends on `httplib2` and `beautifulsoup4`.
-All three dependencies are installed automatically if you install nflgame from
-PyPI with `pip`.
 
 ### Documentation and getting help
 
@@ -32,9 +29,7 @@ If you aren't a programmer, then the
 programmers](https://github.com/derek-adair/nflgame/wiki/Tutorial-for-non-programmers:-Installation-and-examples)
 is for you!
 
-Also, nflgame has decent (but not perfect)
-[API documentation](http://pdoc.derekadair.com/nflgame).
-If you're just looking around, make sure to look at the submodules too.
+Also, nflgame has decent (but not perfect)[API documentation](http://pdoc.derekadair.com/nflgame). If you're just looking around, make sure to look at the submodules as well.
 
 Feel free to [open a new issue on the
 tracker](https://github.com/derek-adair/nflgame/issues/new), which is currently the most expedient way to get support.
