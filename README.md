@@ -1,13 +1,29 @@
 A maintained fork of
 [nflgame](https://github.com/BurntSushi/nflgame/)
 ================
-**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** with the 2018 season data to date included.  Please note that this is meant to be a drop-in replacement for [nflgame](https://pypi.org/project/nflgame) so as to easily drop into the projects like [nfldb](https://github.com/BurntSushi/nfldb).
+**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** with the 2018 season data to date included.  Please note that this is meant to be a drop-in replacement for [nflgame](https://pypi.org/project/nflgame) so as to easily use with projects like [nfldb](https://github.com/BurntSushi/nfldb).
 
 ### Purpose
 nflgame is an API to retrieve and read NFL Game Center JSON data.
 It can work with real-time data, which can be used for fantasy football.
 
+### Installation and dependencies
 
+While a [python3 implementation is on our radar](https://github.com/derek-adair/nflgame/issues/2), this project **ONLY WORKS WITH PYTHON 2**
+
+nflgame-redux is in the
+[Python Package Index (PyPI)](http://pypi.python.org/pypi/nflgame-redux/).
+On all platforms, it is recommend to install it with `pip`:
+
+```
+pip install nflgame-redux
+```
+
+nflgame's core functionality can be used without any dependencies beyond the
+Python standard library, but `nflgame.live` depends on `pytz` and the
+`nflgame-update-players` script depends on `httplib2` and `beautifulsoup4`.
+All three dependencies are installed automatically if you install nflgame from
+PyPI with `pip`.
 
 ### Documentation and getting help
 
@@ -96,26 +112,6 @@ You may also be interested in combining
 with nfldb to
 [search and watch video of
 plays](https://github.com/BurntSushi/nfldb/wiki/Watching-videos-of-plays-with-nflvid).
-
-
-### Installation and dependencies
-
-While we are currently investigating and working towards python3 implementation, this project **ONLY WORKS WITH PYTHON 2**
-
-
-nflgame-redux is in the
-[Python Package Index (PyPI)](http://pypi.python.org/pypi/nflgame-redux/).
-On all platforms, it is recommend to install it with `pip`:
-
-```
-pip install nflgame-redux
-```
-
-nflgame's core functionality can be used without any dependencies beyond the
-Python standard library, but `nflgame.live` depends on `pytz` and the
-`nflgame-update-players` script depends on `httplib2` and `beautifulsoup4`.
-All three dependencies are installed automatically if you install nflgame from
-PyPI with `pip`.
 
 ### Updating the player database (e.g., rosters)
 
