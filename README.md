@@ -1,17 +1,30 @@
 A maintained fork of
 [nflgame](https://github.com/BurntSushi/nflgame/)
 ================
-**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** with the 2018 season data to date included.  
+**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** with the 2018 season data to date included.  Please note that this is meant to be a drop-in replacement for [nflgame](https://pypi.org/project/nflgame) so as to easily drop into the projects like [nfldb](https://github.com/BurntSushi/nfldb).
 
-**NOTE**: The scorestrip api seems to be depricated so downloading json data on demand is broken.
-
+### Purpose
 nflgame is an API to retrieve and read NFL Game Center JSON data.
 It can work with real-time data, which can be used for fantasy football.
 
-**PLEASE DO NOT EMAIL ME QUESTIONS. USE THE
-[ISSUE TRACKER](https://github.com/derek-adair/nflgame/issues) TO ASK
-QUESTIONS.**
 
+
+### Documentation and getting help
+
+If you aren't a programmer, then the
+[tutorial for non
+programmers](https://github.com/derek-adair/nflgame/wiki/Tutorial-for-non-programmers:-Installation-and-examples)
+is for you!
+
+Also, nflgame has decent (but not perfect)
+[API documentation](http://pdoc.derekadair.com/nflgame).
+If you're just looking around, make sure to look at the submodules too.
+
+Feel free to [open a new issue on the
+tracker](https://github.com/derek-adair/nflgame/issues/new), which is currently the most expedient way to get support.
+
+
+### How it works
 nflgame works by parsing the same JSON data that powers NFL.com's live
 GameCenter. Therefore, nflgame can be used to report game statistics while
 a game is being played.
@@ -71,31 +84,6 @@ And the output is:
 (NYG, NYG 20, Q1, 1 and 10) (13:04) E.Manning pass short middle to H.Nicks pushed ob at DAL 23 for 57 yards (M.Claiborne). Pass complete on a slant pattern.
 ```
 
-
-### Documentation and getting help
-
-If you aren't a programmer, then the
-[tutorial for non
-programmers](https://github.com/derek-adair/nflgame/wiki/Tutorial-for-non-programmers:-Installation-and-examples)
-is for you!
-
-Also, nflgame has decent (but not perfect)
-[API documentation](http://pdoc.burntsushi.net/nflgame).
-If you're just looking around, make sure to look at the submodules too.
-
-If you need help, please come visit us at IRC/FreeNode on channel `#nflgame`.
-If you've never used IRC before, then you can
-[use a web client](http://webchat.freenode.net/?channels=%23nflgame).
-(Enter any nickname you like, make sure the channel is `#nflgame`, fill in
-the captcha and hit connect.)
-
-Failing IRC, the second fastest way to get help is to
-[open a new issue on the
-tracker](https://github.com/derek-adair/nflgame/issues/new).
-There are several active contributors to nflgame that watch the issue tracker.
-We tend to respond fairly quickly!
-
-
 ### I want a database!
 
 Then you should check out my new project,
@@ -112,27 +100,22 @@ plays](https://github.com/BurntSushi/nfldb/wiki/Watching-videos-of-plays-with-nf
 
 ### Installation and dependencies
 
-nflgame is in the
-[Python Package Index (PyPI)](http://pypi.python.org/pypi/nflgame/).
+While we are currently investigating and working towards python3 implementation, this project **ONLY WORKS WITH PYTHON 2**
+
+
+nflgame-redux is in the
+[Python Package Index (PyPI)](http://pypi.python.org/pypi/nflgame-redux/).
 On all platforms, it is recommend to install it with `pip`:
 
 ```
-pip install nflgame
+pip install nflgame-redux
 ```
-
-(You may need to use `pip2` if Python 3 is the default on your system.)
-
-If you can't get `pip` to work on Windows, then you can try downloading the
-Windows installer on nflgame's PyPI page.
 
 nflgame's core functionality can be used without any dependencies beyond the
 Python standard library, but `nflgame.live` depends on `pytz` and the
 `nflgame-update-players` script depends on `httplib2` and `beautifulsoup4`.
 All three dependencies are installed automatically if you install nflgame from
 PyPI with `pip`.
-
-nflgame does not yet work on Python 3, but it should work with Python 2.7.
-
 
 ### Updating the player database (e.g., rosters)
 
@@ -169,4 +152,3 @@ from an entire season:
 ```python
 nflgame.combine(nflgame.games(2010)).csv('season2010.csv')
 ```
-
