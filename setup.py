@@ -14,7 +14,7 @@ except LookupError:
         return {True: enc}.get(name == 'mbcs')
     codecs.register(wrapper)
 
-install_requires = ['pytz', 'httplib2', 'beautifulsoup4']
+install_requires = ['pytz', 'httplib2', 'beautifulsoup4', 'lxml']
 
 cwd = path.dirname(__file__)
 longdesc = codecs.open(path.join(cwd, 'longdesc.rst'), 'r', 'ascii').read()
