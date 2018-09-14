@@ -1,3 +1,5 @@
+[![Downloads](https://pepy.tech/badge/nflgame-redux)](https://pepy.tech/project/nflgame-redux)
+
 A maintained fork of
 [nflgame](https://github.com/BurntSushi/nflgame/)
 ================
