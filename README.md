@@ -24,6 +24,11 @@ nflgame-redux is in the
 pip install nflgame-redux
 ```
 
+3. Update players
+```
+nflgame-update-players
+```
+
 ### Documentation and getting help
 
 If you aren't a programmer, then the
