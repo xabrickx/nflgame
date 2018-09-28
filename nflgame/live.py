@@ -40,7 +40,7 @@ will probably affect the API at least a little bit.
 """
 import datetime
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import xml.dom.minidom as xml
 
 try:
