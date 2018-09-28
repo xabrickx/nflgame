@@ -40,8 +40,8 @@ will probably affect the API at least a little bit.
 """
 import datetime
 import time
-import urllib.request, urllib.error, urllib.parse
-import xml.dom.minidom as xml
+import math
+
 
 try:
     import pytz
@@ -430,6 +430,8 @@ def calc_week(instant):
         if  week > 4:
             week = 4
 
+    # Let's not work on non-integer weeks
+    week = math.trunc(week)
     return season, season_phase, week
 
 

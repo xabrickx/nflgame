@@ -114,9 +114,23 @@ class PossessionTime (object):
         """
         return self.seconds + self.minutes * 60
 
-    def __cmp__(self, other):
-        a, b = (self.minutes, self.seconds), (other.minutes, other.seconds)
-        return cmp(a, b)
+    def __lt__(self, other):
+        return self.total_seconds() < other.total_seconds()
+
+    def __gt__(self, other):
+        return self.total_seconds() > other.total_seconds()
+
+    def __eq__(self,other):
+        return self.total_seconds() == other.total_seconds()
+
+    def __ge__(self,other):
+        return self.total_seconds() >= other.total_seconds()
+    
+    def __le__(self,other):
+        return self.total_seconds() <= other.total_seconds()
+    
+    def __eq__(self,other):
+        return self.total_seconds() == other.total_seconds()
 
     def __add__(self, other):
         new_time = PossessionTime('0:00')
@@ -169,6 +183,7 @@ class GameClock (object):
             else:
                 self.qtr = 'Pregame'
 
+    
     @property
     def quarter(self):
         return self.__qtr
@@ -192,12 +207,26 @@ class GameClock (object):
     def is_final(self):
         return 'final' in self.qtr.lower()
 
-    def __cmp__(self, other):
-        if self.__qtr != other.__qtr:
-            return cmp(self.__qtr, other.__qtr)
-        elif self._minutes != other._minutes:
-            return cmp(other._minutes, self._minutes)
-        return cmp(other._seconds, self._seconds)
+    def elapsed_time(self):
+        return self.__qtr -1 * 15 * 60 + (self._minutes * 60) + self._seconds
+
+    def __lt__(self, other):
+        return self.elapsed_time() < other.elapsed_time()
+
+    def __gt__(self, other):
+        return self.elapsed_time() > other.elapsed_time()
+
+    def __eq__(self, other):
+        return self.elapsed_time() == other.elapsed_time()
+
+    def __ge__(self, other):
+        return self.elapsed_time() >= other.elapsed_time()
+
+    def __le__(self, other):
+        return self.elapsed_time() <= other.elapsed_time()
+
+    def __eq__(self, other):
+        return self.elapsed_time() == other.elapsed_time()
 
     def __str__(self):
         """
