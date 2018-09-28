@@ -1,3 +1,5 @@
+[![Downloads](https://pepy.tech/badge/nflgame-redux)](https://pepy.tech/project/nflgame-redux)
+
 A maintained fork of
 [nflgame](https://github.com/BurntSushi/nflgame/)
 ================
@@ -20,6 +22,11 @@ nflgame-redux is in the
 
 ```
 pip install nflgame-redux
+```
+
+3. Update players
+```
+nflgame-update-players
 ```
 
 ### Documentation and getting help
