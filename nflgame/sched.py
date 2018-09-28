@@ -62,7 +62,7 @@ def _create_schedule(jsonf=None):
     try:
         data = json.loads(open(jsonf).read())
     except IOError:
-        return OrderedDict()
+        return OrderedDict(), datetime.datetime.utcnow()
 
     sched = OrderedDict()
     for gsis_id, info in data.get('games', []):
