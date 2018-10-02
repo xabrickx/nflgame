@@ -14,7 +14,7 @@ except LookupError:
         return {True: enc}.get(name == 'mbcs')
     codecs.register(wrapper)
 
-install_requires = ['pytz', 'httplib2', 'beautifulsoup4']
+install_requires = ['pytz', 'beautifulsoup4', 'lxml', 'requests']
 
 cwd = path.dirname(__file__)
 longdesc = codecs.open(path.join(cwd, 'longdesc.rst'), 'r', 'ascii').read()
@@ -44,9 +44,9 @@ setup(
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Other Audience',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 2 :: Only',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Database',
     ],
     platforms='ANY',
@@ -56,6 +56,6 @@ setup(
     data_files=[('share/doc/nflgame', ['README.md', 'CHANGELOG', 'UNLICENSE',
                                        'longdesc.rst']),
                 ('share/doc/nflgame/doc', glob('doc/nflgame/*.html'))],
-    scripts=['scripts/nflgame-update-players'],
+    scripts=['scripts/nflgame-update-players','scripts/nflgame-update-schedule'],
     install_requires=install_requires
 )

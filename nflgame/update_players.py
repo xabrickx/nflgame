@@ -47,8 +47,7 @@ import os
 import re
 import sys
 import traceback
-
-import httplib2
+import requests
 
 from bs4 import BeautifulSoup
 
@@ -67,16 +66,9 @@ import nflgame.live
 import nflgame.player
 
 urls = {
-    'roster': 'http://www.nfl.com/teams/roster?team=%s',
-    'gsis_profile': 'http://www.nfl.com/players/profile?id=%s',
+    'roster': 'http://www.nfl.com/teams/roster',
+    'gsis_profile': 'http://www.nfl.com/players/profile',
 }
-
-
-def new_http():
-    http = httplib2.Http(timeout=10)
-    http.follow_redirects = True
-    return http
-
 
 def initial_mappings(conf):
     metas, reverse = {}, {}
@@ -104,8 +96,8 @@ def profile_id_from_url(url):
 
 
 def profile_url(gsis_id):
-    resp, content = new_http().request(urls['gsis_profile'] % gsis_id, 'HEAD')
-    if resp['status'] != '301':
+    resp = requests.head(urls['gsis_profile'], params={'id':gsis_id})
+    if resp.status_code != 301:
         return None
     loc = resp['location']
     if not loc.startswith('http://'):
@@ -114,10 +106,10 @@ def profile_url(gsis_id):
 
 
 def gsis_id(profile_url):
-    resp, content = new_http().request(profile_url, 'GET')
-    if resp['status'] != '200':
+    resp = requests.get(profile_url)
+    if resp.status_code != 200:
         return None
-    m = re.search('GSIS\s+ID:\s+([0-9-]+)', content)
+    m = re.search('GSIS\s+ID:\s+([0-9-]+)', resp.text)
     if m is None:
         return None
     gid = m.group(1).strip()
@@ -127,10 +119,10 @@ def gsis_id(profile_url):
 
 
 def roster_soup(team):
-    resp, content = new_http().request(urls['roster'] % team, 'GET')
-    if resp['status'] != '200':
+    resp = requests.get(urls['roster'], params={'team':team})
+    if resp.status_code != 200:
         return None
-    return BeautifulSoup(content, PARSER)
+    return BeautifulSoup(resp.text, PARSER)
 
 
 def try_int(s):

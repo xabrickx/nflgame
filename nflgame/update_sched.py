@@ -126,9 +126,19 @@ def update_week(sched, year, stype, week):
     Updates the schedule for the given week in place. `year` should be
     an integer year, `stype` should be one of the strings `PRE`, `REG`
     or `POST`, and `week` should be an integer in the range `[1, 17]`.
+
+    Returns:
+        bool: True if at least one game was returned from week_schedule().
+        False otherwise.
     """
-    for game in week_schedule(year, stype, week):
+    games = week_schedule(year, stype, week)
+    if not games:
+        return False
+
+    for game in games:
         sched[game['eid']] = game
+
+    return True
 
 
 def write_schedule(fpath, sched):
