@@ -42,7 +42,6 @@ import datetime
 import time
 import math
 
-
 try:
     import pytz
 except ImportError:
