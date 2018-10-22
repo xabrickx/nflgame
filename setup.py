@@ -56,6 +56,9 @@ setup(
     data_files=[('share/doc/nflgame', ['README.md', 'CHANGELOG', 'UNLICENSE',
                                        'longdesc.rst']),
                 ('share/doc/nflgame/doc', glob('doc/nflgame/*.html'))],
-    scripts=['scripts/nflgame-update-players'],
+    scripts=[
+        'scripts/nflgame-update-players',
+        'scripts/nflgame-update-schedule',
+    ],
     install_requires=install_requires
 )
