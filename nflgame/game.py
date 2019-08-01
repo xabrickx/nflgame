@@ -262,10 +262,10 @@ class Game (object):
         try:
             if eid is not None:
                 game.eid = eid
-                game.data = json.loads(game.rawData)[game.eid]
+                game.data = json.loads(game.rawData.decode('utf-8'))[game.eid]
             else:  # For when we have rawData (fpath) and no eid.
                 game.eid = None
-                game.data = json.loads(game.rawData)
+                game.data = json.loads(game.rawData.decode('utf-8'))
                 for k, v in game.data.items():
                     if isinstance(v, dict):
                         game.eid = k
