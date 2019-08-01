@@ -99,7 +99,7 @@ def profile_url(gsis_id):
     resp = requests.head(urls['gsis_profile'], params={'id':gsis_id})
     if resp.status_code != 301:
         return None
-    loc = resp['location']
+    loc = resp.headers.['location']
     if not loc.startswith('http://'):
         loc = 'http://www.nfl.com' + loc
     return loc
