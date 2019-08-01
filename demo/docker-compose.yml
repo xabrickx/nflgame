@@ -4,6 +4,4 @@ services:
         stdin_open: true
         tty: true
         build: .
-        volumes:
-            - ".:/app:rw"
         command: python simple_example.py
