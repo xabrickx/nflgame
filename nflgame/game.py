@@ -335,7 +335,7 @@ class Game (object):
 
         # Check to see if the game is over, and if so, cache the data.
         if self.game_over() and not os.access(_jsonf % eid, os.R_OK):
-            self.save()
+             self.save()
 
     def is_home(self, team):
         """Returns true if team (i.e., 'NE') is the home team."""
@@ -365,7 +365,8 @@ class Game (object):
         if fpath is None:
             fpath = _jsonf % self.eid
         try:
-            print(self.rawData, file=gzip.open(fpath, 'w+'))
+            with gzip.open(fpath, 'w+') as outfile:
+                outfile.write(self.rawData)
         except IOError:
             print("Could not cache JSON data. Please " \
                                  "make '%s' writable." \
