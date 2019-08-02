@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # The purpose of this script is to test the aggregate accuracy of statistics
 # reported by nflgame. This is done by assuming a ground truth, which we take
@@ -45,7 +45,7 @@ import os
 import os.path as path
 import sys
 
-import Levenshtein
+#import Levenshtein
 
 import nflgame
 
@@ -130,7 +130,7 @@ def find(name, team=None, pos=None):
 
     result = heapq.nlargest(1, result)
     if team is not None and result[0][0] < 0.85:
-        sameteam = lambda (r, pid): \
+        sameteam = lambda pid: \
             nflgame.standard_team(team) == indexed[pid].team
         result = filter(sameteam, result)
         if len(result) == 0:

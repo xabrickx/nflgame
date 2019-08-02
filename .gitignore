@@ -15,4 +15,5 @@ ve
 *.pyc
 .pytest_cache
 .idea
+*.bak
 .pypirc

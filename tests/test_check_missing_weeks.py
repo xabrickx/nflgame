@@ -89,7 +89,7 @@ def create_sched_copy(season=None, phases=[], weeks=[]):
     if not season and not weeks:
         return sched_copy
 
-    for gsis_id, info in test_sched.iteritems():
+    for gsis_id, info in test_sched.items():
         if season:
             if info['year'] == season:
                 if not phases:
