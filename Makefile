@@ -6,7 +6,7 @@ docs:
 
 pypi: 
 	python setup.py sdist bdist_wheel
-	twine upload dist
+	twine upload dist/*
 
 longdesc.rst: nflgame/__init__.py docstring
 	pandoc -f markdown -t rst -o longdesc.rst docstring
