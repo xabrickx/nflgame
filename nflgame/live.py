@@ -122,13 +122,6 @@ def current_games(year=None, week=None, kind='REG'):
             # Do something with games
             time.sleep(60)
 
-    NOTE: Providing both year and week was originally mainly a way to
-    prevent unnecessary calls to NFL.com. Now NFL.com is not called in
-    current_year_and_week() anyway. Some (pretty slim) calculation time
-    would still be saved, though.
-
-    The kind parameter specifies whether to fetch preseason, regular season
-    or postseason games. Valid values are PRE, REG and POST.
     """
     if year is None or week is None:
         year, week = current_year_and_week()
