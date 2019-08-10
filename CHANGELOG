@@ -1,7 +1,9 @@
-1.3.0
+2.0.1
 ======
   - Updated to support Python 3
   - Replaced httplib2 with more modern requests library
+  - Replaced scheduling logic w/ feeds-rs current week api call
+
 
 1.2.20
 ======
