@@ -3,22 +3,19 @@
 A maintained fork of
 [nflgame](https://github.com/BurntSushi/nflgame/)
 ================
-**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** with the 2018 season data to date included.  Please note that this is meant to be a drop-in replacement for [nflgame](https://pypi.org/project/nflgame) so as to easily use with projects like [nfldb](https://github.com/BurntSushi/nfldb).
+**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** drop-in replacement for [nflgame](https://pypi.org/project/nflgame) so as to easily use with projects like [nfldb](https://github.com/BurntSushi/nfldb).
 
 ### Purpose
-nflgame is an API to retrieve and read NFL Game Center JSON data.
+nflgame is an API to retrieve and read NFL data feeds.
 It can work with real-time data, which can be used for fantasy football.
 
 ### Installation
 
-While a [python3 implementation is on our radar](https://github.com/derek-adair/nflgame/issues/2), this project **ONLY WORKS WITH PYTHON 2**
-
-nflgame-redux is in the
-[Python Package Index (PyPI)](http://pypi.python.org/pypi/nflgame-redux/).
+[python3 implementation is on our radar](https://github.com/derek-adair/nflgame/tree/py3), this project is dropping python 2 support **effective immediately**.
 
 1. Install [virtualenv](https://virtualenv.pypa.io/en/stable/installation/) and make sure it's [activated](https://virtualenv.pypa.io/en/stable/userguide/).
 
-2. In your python 2.7 virtualenv...
+2. In your **python 3** virtualenv...
 
 ```
 pip install nflgame-redux
