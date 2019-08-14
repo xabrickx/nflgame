@@ -11,7 +11,7 @@ It can work with real-time data, which can be used for fantasy football.
 
 ### Installation
 
-[python3 implementation is on our radar](https://github.com/derek-adair/nflgame/tree/py3), this project is dropping python 2 support **effective immediately**.
+[python3 implementation is in the works](https://github.com/derek-adair/nflgame/tree/py3), this project is dropping python 2 support **effective immediately**.
 
 1. Install [virtualenv](https://virtualenv.pypa.io/en/stable/installation/) and make sure it's [activated](https://virtualenv.pypa.io/en/stable/userguide/).
 
