@@ -11,7 +11,9 @@ It can work with real-time data, which can be used for fantasy football.
 
 ### Installation
 
-[python3 implementation is in the works](https://github.com/derek-adair/nflgame/tree/py3), this project is dropping python 2 support **effective immediately**.
+[python3 implementation is in the works](https://github.com/derek-adair/nflgame/tree/py3), please go check it out and test it under the py3 branch or `pip install nflgame-redux==2.0.1a1`.
+
+**this project is no longer python3 compatible.**.  The old python2 (<1.2.20) branch *should* work but... come on now... just [upgrade](https://docs.python.org/2/library/2to3.html).
 
 1. Install [virtualenv](https://virtualenv.pypa.io/en/stable/installation/) and make sure it's [activated](https://virtualenv.pypa.io/en/stable/userguide/).
 
