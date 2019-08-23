@@ -434,8 +434,9 @@ def _search_schedule(year=None, week=None, home=None, away=None, kind='REG',
     for info in nflgame.sched.games.values():
         y, t, w = info['year'], info['season_type'], info['week']
         h, a = info['home'], info['away']
-        if eid is not None and eid != info['eid']:
-            continue
+        if eid is not None and eid == info['eid']:
+            # Always return a non-array if eid is a match
+            return info
         if year is not None:
             if isinstance(year, list) and y not in year:
                 continue
