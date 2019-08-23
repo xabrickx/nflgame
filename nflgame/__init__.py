@@ -401,8 +401,8 @@ def combine_plays(games):
     return nflgame.seq.GenPlays(chain)
 
 
-def _search_schedule(year, week=None, home=None, away=None, kind='REG',
-                     started=False):
+def _search_schedule(year=None, week=None, home=None, away=None, kind='REG',
+                     started=False, eid=None):
     """
     Searches the schedule to find the game identifiers matching the criteria
     given.
@@ -434,6 +434,8 @@ def _search_schedule(year, week=None, home=None, away=None, kind='REG',
     for info in nflgame.sched.games.values():
         y, t, w = info['year'], info['season_type'], info['week']
         h, a = info['home'], info['away']
+        if eid is not None and eid != info['eid']:
+            continue
         if year is not None:
             if isinstance(year, list) and y not in year:
                 continue
@@ -459,5 +461,6 @@ def _search_schedule(year, week=None, home=None, away=None, kind='REG',
             now = nflgame.live._now()
             if gametime > now and (gametime - now).total_seconds() > 300:
                 continue
+
         infos.append(info)
     return infos

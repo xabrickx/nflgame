@@ -256,6 +256,17 @@ class Game (object):
             return None
         if rawData is None or rawData.strip() == '{}':
             gameData = dict()
+
+            # find the schedule data if it wasn't supplied in the kwargs
+            if len(kwargs) == 0 and eid is not None:
+                kwargs = nflgame._search_schedule(eid=eid)
+
+            if len(kwargs) == 0:
+                return None
+
+            # Flatten the search results
+            kwargs = kwargs[0]
+
             gameData = {
                 'home': {
                     'abbr': kwargs['home'],
