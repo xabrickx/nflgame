@@ -264,9 +264,6 @@ class Game (object):
             if len(kwargs) == 0:
                 return None
 
-            # Flatten the search results
-            kwargs = kwargs[0]
-
             gameData = {
                 'home': {
                     'abbr': kwargs['home'],

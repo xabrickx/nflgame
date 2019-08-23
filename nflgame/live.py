@@ -95,6 +95,10 @@ checking for updated game stats.
 """
 
 
+def current_season_phase():
+    _update_week_number()
+    return _cur_season_phase
+
 def current_year_and_week():
     """
     Returns a tuple (year, week) where year is the current year of the season
@@ -215,6 +219,7 @@ def run(callback, active_interval=15, inactive_interval=900, stop=None):
             last_week_check = _update_week_number()
 
         games = _active_games(inactive_interval)
+
         if active:
             active = _run_active(callback, games)
             if not active:
