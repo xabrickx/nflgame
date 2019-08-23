@@ -248,36 +248,60 @@ class Game (object):
     the winner of the game, the score and a list of all the scoring plays.
     """
 
-    def __new__(cls, eid=None, fpath=None):
+    def __new__(cls, eid=None, fpath=None, **kwargs):
         # If we can't get a valid JSON data, exit out and return None.
         try:
             rawData = _get_json_data(eid, fpath)
         except urllib.error.URLError:
             return None
         if rawData is None or rawData.strip() == '{}':
-            return None
+            gameData = dict()
+            gameData = {
+                'home': {
+                    'abbr': kwargs['home'],
+                    'score': {
+                        'T': 0
+                    }
+                },
+                'away': {
+                    'abbr': kwargs['away'],
+                    'score': {
+                        'T': 0
+                    }
+                },
+                "gamekey": kwargs['gamekey'],
+                "qtr": 'Pregame',
+                "gcJsonAvailable": False,
+                "clock": 0
+            }
+
         game = object.__new__(cls)
         game.rawData = rawData
 
-        try:
-            if eid is not None:
-                game.eid = eid
-                game.data = json.loads(game.rawData.decode('utf-8'))[game.eid]
-            else:  # For when we have rawData (fpath) and no eid.
-                game.eid = None
-                game.data = json.loads(game.rawData.decode('utf-8'))
-                for k, v in game.data.items():
-                    if isinstance(v, dict):
-                        game.eid = k
-                        game.data = v
-                        break
-                assert game.eid is not None
-        except ValueError:
-            return None
+        if game.rawData is None:
+            game.data = gameData
+            game.eid = eid
+        else:
+            try:
+                if eid is not None:
+                    game.eid = eid
+                    game.data = json.loads(game.rawData.decode('utf-8'))[game.eid]
+                else:  # For when we have rawData (fpath) and no eid.
+                    game.eid = None
+                    game.data = json.loads(game.rawData.decode('utf-8'))
+                    for k, v in game.data.items():
+                        if isinstance(v, dict):
+                            game.eid = k
+                            game.data = v
+                            break
+                    assert game.eid is not None
+                game.data['gcJsonAvailable'] = True
+            except ValueError:
+                return None
 
         return game
 
-    def __init__(self, eid=None, fpath=None):
+    def __init__(self, eid=None, fpath=None, **kwargs):
         """
         Creates a new Game instance given a game identifier.
 
@@ -297,41 +321,44 @@ class Game (object):
         # Home and team cumulative statistics.
         self.home = self.data['home']['abbr']
         self.away = self.data['away']['abbr']
-        self.stats_home = _json_team_stats(self.data['home']['stats']['team'])
-        self.stats_away = _json_team_stats(self.data['away']['stats']['team'])
-
-        # Load up some simple static values.
         self.gamekey = nflgame.sched.games[self.eid]['gamekey']
         self.time = GameClock(self.data['qtr'], self.data['clock'])
-        self.down = _tryint(self.data['down'])
-        self.togo = _tryint(self.data['togo'])
         self.score_home = int(self.data['home']['score']['T'])
         self.score_away = int(self.data['away']['score']['T'])
-        for q in (1, 2, 3, 4, 5):
-            for team in ('home', 'away'):
-                score = self.data[team]['score'][str(q)]
-                self.__dict__['score_%s_q%d' % (team, q)] = int(score)
+        self.gcJsonAvailable = self.data['gcJsonAvailable']
 
-        if not self.game_over():
-            self.winner = None
-        else:
-            if self.score_home > self.score_away:
-                self.winner = self.home
-                self.loser = self.away
-            elif self.score_away > self.score_home:
-                self.winner = self.away
-                self.loser = self.home
+        if(self.data['gcJsonAvailable']):
+            self.stats_home = _json_team_stats(self.data['home']['stats']['team'])
+            self.stats_away = _json_team_stats(self.data['away']['stats']['team'])
+
+            # Load up some simple static values.
+            self.down = _tryint(self.data['down'])
+            self.togo = _tryint(self.data['togo'])
+            for q in (1, 2, 3, 4, 5):
+                for team in ('home', 'away'):
+                    score = self.data[team]['score'][str(q)]
+                    self.__dict__['score_%s_q%d' % (team, q)] = int(score)
+
+            if not self.game_over():
+                self.winner = None
             else:
-                self.winner = '%s/%s' % (self.home, self.away)
-                self.loser = '%s/%s' % (self.home, self.away)
+                if self.score_home > self.score_away:
+                    self.winner = self.home
+                    self.loser = self.away
+                elif self.score_away > self.score_home:
+                    self.winner = self.away
+                    self.loser = self.home
+                else:
+                    self.winner = '%s/%s' % (self.home, self.away)
+                    self.loser = '%s/%s' % (self.home, self.away)
 
-        # Load the scoring summary into a simple list of strings.
-        self.scores = []
-        for k in sorted(map(int, self.data['scrsummary'])):
-            play = self.data['scrsummary'][str(k)]
-            s = '%s - Q%d - %s - %s' \
-                % (play['team'], play['qtr'], play['type'], play['desc'])
-            self.scores.append(s)
+            # Load the scoring summary into a simple list of strings.
+            self.scores = []
+            for k in sorted(map(int, self.data['scrsummary'])):
+                play = self.data['scrsummary'][str(k)]
+                s = '%s - Q%d - %s - %s' \
+                    % (play['team'], play['qtr'], play['type'], play['desc'])
+                self.scores.append(s)
 
         # Check to see if the game is over, and if so, cache the data.
         if self.game_over() and not os.access(_jsonf % eid, os.R_OK):
@@ -394,6 +421,8 @@ class Game (object):
         wrong (particularly for stats that are in both play-by-play data
         and game statistics), but does not eliminate them.
         """
+        if not self.gcJsonAvailable:
+            return {}
         game_players = list(self.players)
         play_players = list(self.drives.plays().players())
         max_players = OrderedDict()

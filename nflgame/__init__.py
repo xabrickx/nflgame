@@ -268,7 +268,7 @@ def games_gen(year, week=None, home=None, away=None,
 
     def gen():
         for info in infos:
-            g = nflgame.game.Game(info['eid'])
+            g = nflgame.game.Game(**info)
             if g is None:
                 continue
             yield g
@@ -316,7 +316,7 @@ def one(year, week, home, away, kind='REG', started=False):
     if not infos:
         return None
     assert len(infos) == 1, 'More than one game matches the given criteria.'
-    return nflgame.game.Game(infos[0]['eid'])
+    return nflgame.game.Game(**infos[0])
 
 
 def combine(games, plays=False):
