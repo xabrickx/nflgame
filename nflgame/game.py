@@ -5,6 +5,9 @@ import gzip
 import json
 import socket
 import sys
+import datetime
+import time
+import logging
 import urllib.request, urllib.error, urllib.parse
 from collections import OrderedDict
 
@@ -12,6 +15,20 @@ import nflgame.player
 import nflgame.sched
 import nflgame.seq
 import nflgame.statmap
+import nflgame.live
+
+try:
+    import pytz
+except ImportError:
+    pass
+
+
+log_level = os.getenv("NFLGAME_LOG_LEVEL", '')
+logging.basicConfig()
+logger = logging.getLogger('nflgame')
+
+if log_level == "INFO":
+    logger.root.setLevel(logging.INFO)
 
 _MAX_INT = sys.maxsize
 
@@ -249,47 +266,49 @@ class Game (object):
     """
 
     def __new__(cls, eid=None, fpath=None, **kwargs):
-        # If we can't get a valid JSON data, exit out and return None.
-        try:
-            rawData = _get_json_data(eid, fpath)
-        except urllib.error.URLError:
-            return None
-        if rawData is None or rawData.strip() == '{}':
-            gameData = dict()
+        logger.info("EID: {}".format(eid))
+        if eid is not None:
+            game_starting_soon, schedule_info = _infer_gc_json_available(eid)
 
-            # find the schedule data if it wasn't supplied in the kwargs
-            if len(kwargs) == 0 and eid is not None:
-                kwargs = nflgame._search_schedule(eid=eid)
-
-            if len(kwargs) == 0:
+        if game_starting_soon:
+            try:
+                rawData = _get_json_data(eid, fpath)
+            except urllib.error.URLError:
+                # @TODO - find when this happens, likely never as ln# 868 catches
+                # 404 errors and returns None
+                return None
+        else:
+            if len(schedule_info) == 0:
+                # No game was found in the schedule
                 return None
 
             gameData = {
                 'home': {
-                    'abbr': kwargs['home'],
+                    'abbr': schedule_info['home'],
                     'score': {
                         'T': 0
                     }
                 },
                 'away': {
-                    'abbr': kwargs['away'],
+                    'abbr': schedule_info['away'],
                     'score': {
                         'T': 0
                     }
                 },
-                "gamekey": kwargs['gamekey'],
+                "gamekey": schedule_info['gamekey'],
                 "qtr": 'Pregame',
                 "gcJsonAvailable": False,
                 "clock": 0
             }
 
         game = object.__new__(cls)
-        game.rawData = rawData
 
-        if game.rawData is None:
+        # IF the game isn't starting dump what schedule data we have
+        if not game_starting_soon:
             game.data = gameData
             game.eid = eid
         else:
+            game.rawData = rawData
             try:
                 if eid is not None:
                     game.eid = eid
@@ -403,7 +422,7 @@ class Game (object):
             with gzip.open(fpath, 'w+') as outfile:
                 outfile.write(self.rawData)
         except IOError:
-            print("Could not cache JSON data. Please " \
+            logger.info("Could not cache JSON data. Please " \
                                  "make '%s' writable." \
                                  % os.path.dirname(fpath), file=sys.stderr)
 
@@ -862,14 +881,41 @@ def _get_json_data(eid=None, fpath=None):
 
     fpath = _jsonf % eid
     if os.access(fpath, os.R_OK):
+        logger.info("_get_json_data: json cache found, returning cached data ")
         return gzip.open(fpath).read()
     try:
+        logger.info("_get_json_data: firing request")
         return urllib.request.urlopen(_json_base_url % (eid, eid), timeout=5).read()
     except urllib.error.HTTPError:
         pass
     except socket.timeout:
         pass
+
+    logger.info("_get_json_data: Failed request, returning None")
     return None
+
+
+def _infer_gc_json_available(eid):
+    """
+    Check to see if the game-center json even has a chance to be available, i.e.
+    the game starts in <= 10 minutes.  This is used to prevent superfluous calls 
+    to the nfl api.
+
+    returns a tuple - True/False if the game is about to start and the schedule data
+    """
+    logger.info("Checking to see if the game exists in the schedule")
+    schedule_info = nflgame._search_schedule(eid=eid)
+    if len(schedule_info) == 0:
+        logger.info("No game found")
+        #No game found
+        return False, []
+
+    gametime = nflgame.live._game_datetime(schedule_info)
+    now = nflgame.live._now()
+
+    game_starting_soon = (gametime - now).total_seconds() <= 600
+    logger.info("Game Starting Soon Check: {}".format(game_starting_soon))
+    return  game_starting_soon, schedule_info
 
 
 def _tryint(v):

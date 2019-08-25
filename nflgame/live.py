@@ -33,6 +33,8 @@ import datetime
 import time
 import math
 import requests
+import logging
+import os
 
 try:
     import pytz
@@ -41,6 +43,13 @@ except ImportError:
 
 import nflgame
 import nflgame.game
+
+log_level = os.getenv("NFLGAME_LOG_LEVEL", '')
+logging.basicConfig()
+logger = logging.getLogger('nflgame')
+
+if log_level == "INFO":
+    logger.root.setLevel(logging.INFO)
 
 # [00:21] <rasher> burntsushi: Alright, the schedule changes on Wednesday 7:00
 # UTC during the regular season
@@ -92,6 +101,7 @@ def current_season_phase():
     """
     _update_week_number()
     return _cur_season_phase
+
 
 def current_year_and_week():
     """
@@ -188,18 +198,15 @@ def run(callback, active_interval=15, inactive_interval=900, wakeup_time=900, st
     active = False
     last_week_check = _update_week_number()
 
+    logger.info("Starting live loop")
+
     # Before we start with the main loop, we make a first pass at what we
     # believe to be the active games. Of those, we check to see if any of
     # them are actually already over, and add them to _completed.
     for info in _active_games(inactive_interval):
         game = nflgame.game.Game(info['eid'])
 
-        # If we couldn't get a game, that probably means the JSON feed
-        # isn't available yet. (i.e., we're early.)
-        if game is None:
-            continue
-
-        # Otherwise, if the game is over, add it to our list of completed
+        # if the game is over, add it to our list of completed
         # games and move on.
         if game.game_over():
             _completed.append(info['eid'])
@@ -333,6 +340,7 @@ def _game_datetime(info):
 
 def _now():
     return datetime.datetime.now(pytz.utc)
+
 
 def _update_week_number():
     global _cur_week, _cur_year, _cur_season_phase
