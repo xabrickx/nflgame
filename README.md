@@ -149,3 +149,9 @@ from an entire season:
 ```python
 nflgame.combine(nflgame.games(2010)).csv('season2010.csv')
 ```
+
+### Contributing (WIP)
+* All active development takes place on the "dev" branch.  This is where pull requests should be submitted against.
+* Bug fixes for released versions should be submitted against "master" branch and will get merged accordingly.
+* This project will stick to [Semantic Versioning](https://semver.org/)
+* Tests are *greatly* encouraged bu tnot required.
