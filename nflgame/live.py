@@ -212,6 +212,8 @@ def run(callback, active_interval=15, inactive_interval=900, wakeup_time=900, st
             _completed.append(info['eid'])
 
     while True:
+        logger.info("--------------")
+        logger.info("nflgame live run Loop")
         if stop is not None and datetime.datetime.now() > stop:
             return
 
@@ -220,6 +222,7 @@ def run(callback, active_interval=15, inactive_interval=900, wakeup_time=900, st
 
         games = _active_games(wakeup_time)
 
+        logger.info("Active: {}".format(active))
         if active:
             active = _run_active(callback, games)
             if not active:
@@ -298,12 +301,20 @@ def _active_games(wakeup_time):
     Returns a list of all active games. In this case, an active game is a game
     that will start within wakeup_time seconds
     """
+    logger.info("_active_games() - Looking for any games within wakeup time of {}".format(wakeup_time))
     games = _games_in_week(_cur_year, _cur_week, _cur_season_phase)
+    logger.info("{} games found".format(len(games)))
     active = []
     for info in games:
         if not _game_is_active(info, wakeup_time):
             continue
         active.append(info)
+
+    logger.info("{} are active".format(len(active)))
+    if len(active) != 0:
+        logger.info("Active Games:::::::::::::::::::::")
+        for game in active:
+            logger.info(game)
     return active
 
 
