@@ -244,7 +244,7 @@ def meta_from_profile_html(html):
 
 def players_from_games(existing, games):
     for g in games:
-        if g is None:
+        if g is None or not g.gcJsonAvailable:
             continue
         for d in g.drives:
             for p in d.plays:
