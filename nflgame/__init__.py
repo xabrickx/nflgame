@@ -268,7 +268,7 @@ def games_gen(year, week=None, home=None, away=None,
 
     def gen():
         for info in infos:
-            g = nflgame.game.Game(info['eid'])
+            g = nflgame.game.Game(**info)
             if g is None:
                 continue
             yield g
@@ -316,7 +316,7 @@ def one(year, week, home, away, kind='REG', started=False):
     if not infos:
         return None
     assert len(infos) == 1, 'More than one game matches the given criteria.'
-    return nflgame.game.Game(infos[0]['eid'])
+    return nflgame.game.Game(**infos[0])
 
 
 def combine(games, plays=False):
@@ -401,8 +401,8 @@ def combine_plays(games):
     return nflgame.seq.GenPlays(chain)
 
 
-def _search_schedule(year, week=None, home=None, away=None, kind='REG',
-                     started=False):
+def _search_schedule(year=None, week=None, home=None, away=None, kind='REG',
+                     started=False, eid=None):
     """
     Searches the schedule to find the game identifiers matching the criteria
     given.
@@ -434,6 +434,13 @@ def _search_schedule(year, week=None, home=None, away=None, kind='REG',
     for info in nflgame.sched.games.values():
         y, t, w = info['year'], info['season_type'], info['week']
         h, a = info['home'], info['away']
+        if eid is not None:
+            if eid == info['eid']:
+                # Always return a non-array if eid is a match
+                return info
+            else:
+                # if eid is supplied and doesn't match, skip
+                continue
         if year is not None:
             if isinstance(year, list) and y not in year:
                 continue
@@ -459,5 +466,6 @@ def _search_schedule(year, week=None, home=None, away=None, kind='REG',
             now = nflgame.live._now()
             if gametime > now and (gametime - now).total_seconds() > 300:
                 continue
+
         infos.append(info)
     return infos

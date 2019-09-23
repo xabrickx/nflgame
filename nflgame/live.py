@@ -11,9 +11,8 @@ It works by periodically downloading data from NFL.com for games that started
 before the current time. Once a game completes, the live module stops asking
 NFL.com for data for that game.
 
-If there are no games being actively played (i.e., it's been more than N hours
-since the last game started), then the live module sleeps for longer periods
-of time.
+If there are no games being actively played (i.e., no games are within the
+wakeup_time), then the live module sleeps for longer periods of time.
 
 Thus, the live module can switch between two different modes: active and
 inactive.
@@ -22,26 +21,20 @@ In the active mode, the live module downloads data from NFL.com in
 short intervals. A transition to an inactive mode occurs when no more games
 are being played.
 
-In the inactive mode, the live module only checks if a game is playing (or
-about to play) every 15 minutes. If a game is playing or about to play, the
+In the inactive mode, the live module only checks if a game is within the
+wakeup_time (default 15 minutes). If a game is playing or about to play, the
 live module switches to the active mode. Otherwise, it stays in the inactive
 mode.
 
 With this strategy, if the live module is working properly, you could
 theoretically keep it running for the entire season.
-
-(N.B. Half-time is ignored. Games are either being actively played or not.)
-
-Alpha status
-============
-This module is emphatically in alpha status. I believe things will work OK for
-the regular season, but the postseason brings new challenges. Moreover, it
-will probably affect the API at least a little bit.
 """
 import datetime
 import time
 import math
 import requests
+import logging
+import os
 
 try:
     import pytz
@@ -50,6 +43,13 @@ except ImportError:
 
 import nflgame
 import nflgame.game
+
+log_level = os.getenv("NFLGAME_LOG_LEVEL", '')
+logging.basicConfig()
+logger = logging.getLogger('nflgame')
+
+if log_level == "INFO":
+    logger.root.setLevel(logging.INFO)
 
 # [00:21] <rasher> burntsushi: Alright, the schedule changes on Wednesday 7:00
 # UTC during the regular season
@@ -95,6 +95,14 @@ checking for updated game stats.
 """
 
 
+def current_season_phase():
+    """
+    Returns the current season phase
+    """
+    _update_week_number()
+    return _cur_season_phase
+
+
 def current_year_and_week():
     """
     Returns a tuple (year, week) where year is the current year of the season
@@ -106,7 +114,7 @@ def current_year_and_week():
     return _cur_year, _cur_week
 
 
-def current_games(year=None, week=None, kind='REG'):
+def current_games(year=None, week=None, kind=_cur_season_phase):
     """
     Returns a list of game.Games of games that are currently playing.
 
@@ -122,13 +130,6 @@ def current_games(year=None, week=None, kind='REG'):
             # Do something with games
             time.sleep(60)
 
-    NOTE: Providing both year and week was originally mainly a way to
-    prevent unnecessary calls to NFL.com. Now NFL.com is not called in
-    current_year_and_week() anyway. Some (pretty slim) calculation time
-    would still be saved, though.
-
-    The kind parameter specifies whether to fetch preseason, regular season
-    or postseason games. Valid values are PRE, REG and POST.
     """
     if year is None or week is None:
         year, week = current_year_and_week()
@@ -156,7 +157,7 @@ def current_games(year=None, week=None, kind='REG'):
     return current
 
 
-def run(callback, active_interval=15, inactive_interval=900, stop=None):
+def run(callback, active_interval=15, inactive_interval=900, wakeup_time=900, stop=None):
     """
     Starts checking for games that are currently playing.
 
@@ -170,11 +171,9 @@ def run(callback, active_interval=15, inactive_interval=900, stop=None):
     not be in either the active or completed lists. No game can ever
     be in both the `active` and `completed` lists at the same time.
 
-    It is possible that a game in the active list is not yet playing because
-    it hasn't started yet. It ends up in the active list because the "pregame"
-    has started on NFL.com's GameCenter web site, and sometimes game data is
-    partially filled. When this is the case, the 'playing' method on
-    a nflgame.game.Game will return False.
+    The active list will be populated with any game that starts within the
+    wakeup_time interval provided.  If a game has not started, game.playing()
+    will be False.
 
     When in the active mode (see live module description), active_interval
     specifies the number of seconds to wait between checking for updated game
@@ -187,7 +186,8 @@ def run(callback, active_interval=15, inactive_interval=900, stop=None):
 
     When in the inactive mode (see live module description), inactive_interval
     specifies the number of seconds to wait between checking whether any games
-    have started or are about to start.
+    have started or are about to start.  wakeup_time is used to add games to 
+    the active list.
 
     With the default parameters, run will never stop. However, you may set
     stop to a Python datetime.datetime value. After time passes the stopping
@@ -198,30 +198,31 @@ def run(callback, active_interval=15, inactive_interval=900, stop=None):
     active = False
     last_week_check = _update_week_number()
 
+    logger.info("Starting live loop")
+
     # Before we start with the main loop, we make a first pass at what we
     # believe to be the active games. Of those, we check to see if any of
     # them are actually already over, and add them to _completed.
     for info in _active_games(inactive_interval):
         game = nflgame.game.Game(info['eid'])
 
-        # If we couldn't get a game, that probably means the JSON feed
-        # isn't available yet. (i.e., we're early.)
-        if game is None:
-            continue
-
-        # Otherwise, if the game is over, add it to our list of completed
+        # if the game is over, add it to our list of completed
         # games and move on.
         if game.game_over():
             _completed.append(info['eid'])
 
     while True:
+        logger.info("--------------")
+        logger.info("nflgame live run Loop")
         if stop is not None and datetime.datetime.now() > stop:
             return
 
         if time.time() - last_week_check > _WEEK_INTERVAL:
             last_week_check = _update_week_number()
 
-        games = _active_games(inactive_interval)
+        games = _active_games(wakeup_time)
+
+        logger.info("Active: {}".format(active))
         if active:
             active = _run_active(callback, games)
             if not active:
@@ -239,12 +240,12 @@ def _run_active(callback, games):
     The active mode traverses each of the active games and fetches info for
     each from NFL.com.
 
-    Then each game (that has info available on NFL.com---that is, the game
-    has started) is added to one of two lists: active and completed, which
+    Then each game is added to one of two lists: active and completed, which
     are passed as the first and second parameters to callback. A game is
-    put in the active list if it's still being played, and into the completed
-    list if it has finished. In the latter case, it is added to a global store
-    of completed games and will never be passed to callback again.
+    put in the active list if it's still being played, or a bout to play
+    and into the completed list if it has finished. In the latter case, 
+    it is added to a global store of completed games and will never be 
+    passed to callback again.
     """
     global _last
 
@@ -274,7 +275,7 @@ def _run_active(callback, games):
     diffs = []
     for game in active + completed:
         for last_game in _last or []:
-            if game.eid != last_game.eid:
+            if game.eid != last_game.eid or not game.gcJsonAvailable:
                 continue
             diffs.append(game - last_game)
 
@@ -285,28 +286,35 @@ def _run_active(callback, games):
 
 def _run_inactive(games):
     """
-    The inactive mode simply checks if there are any active games. If there
-    are, inactive mode needs to stop and transition to active mode---thus
-    we return False. If there aren't any active games, then the inactive
-    mode should continue, where we return True.
+    The inactive mode simply checks if there are any active games (start w/in 
+    wakeup_time). If there are, inactive mode needs to stop and transition to 
+    active mode---thus we return False. If there aren't any active games, then 
+    the inactive mode should continue, where we return True.
 
-    That is, so long as there are no active games, we go back to sleep.
+    i.e. There are no active games, we go back to sleep.
     """
     return len(games) == 0
 
 
-def _active_games(inactive_interval):
+def _active_games(wakeup_time):
     """
     Returns a list of all active games. In this case, an active game is a game
-    that will start within inactive_interval seconds, or has started within
-    _MAX_GAME_TIME seconds in the past.
+    that will start within wakeup_time seconds
     """
+    logger.info("_active_games() - Looking for any games within wakeup time of {}".format(wakeup_time))
     games = _games_in_week(_cur_year, _cur_week, _cur_season_phase)
+    logger.info("{} games found".format(len(games)))
     active = []
     for info in games:
-        if not _game_is_active(info, inactive_interval):
+        if not _game_is_active(info, wakeup_time):
             continue
         active.append(info)
+
+    logger.info("{} are active".format(len(active)))
+    if len(active) != 0:
+        logger.info("Active Games:::::::::::::::::::::")
+        for game in active:
+            logger.info(game)
     return active
 
 
@@ -320,17 +328,17 @@ def _games_in_week(year, week, kind='REG'):
     return nflgame._search_schedule(year, week, kind=kind)
 
 
-def _game_is_active(gameinfo, inactive_interval):
+def _game_is_active(gameinfo, wakeup_time):
     """
     Returns true if the game is active. A game is considered active if the
     game start time is in the past and not in the completed list (which is
     a private module level variable that is populated automatically) or if the
-    game start time is within inactive_interval seconds from starting.
+    game start time is within wakeup_time seconds from starting.
     """
     gametime = _game_datetime(gameinfo)
     now = _now()
     if gametime >= now:
-        return (gametime - now).total_seconds() <= inactive_interval
+        return (gametime - now).total_seconds() <= wakeup_time
     return gameinfo['eid'] not in _completed
 
 
@@ -343,6 +351,7 @@ def _game_datetime(info):
 
 def _now():
     return datetime.datetime.now(pytz.utc)
+
 
 def _update_week_number():
     global _cur_week, _cur_year, _cur_season_phase

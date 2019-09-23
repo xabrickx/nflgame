@@ -5,6 +5,9 @@ import gzip
 import json
 import socket
 import sys
+import datetime
+import time
+import logging
 import urllib.request, urllib.error, urllib.parse
 from collections import OrderedDict
 
@@ -12,6 +15,20 @@ import nflgame.player
 import nflgame.sched
 import nflgame.seq
 import nflgame.statmap
+import nflgame.live
+
+try:
+    import pytz
+except ImportError:
+    pass
+
+
+log_level = os.getenv("NFLGAME_LOG_LEVEL", '')
+logging.basicConfig()
+logger = logging.getLogger('nflgame')
+
+if log_level == "INFO":
+    logger.root.setLevel(logging.INFO)
 
 _MAX_INT = sys.maxsize
 
@@ -248,36 +265,70 @@ class Game (object):
     the winner of the game, the score and a list of all the scoring plays.
     """
 
-    def __new__(cls, eid=None, fpath=None):
-        # If we can't get a valid JSON data, exit out and return None.
-        try:
-            rawData = _get_json_data(eid, fpath)
-        except urllib.error.URLError:
-            return None
-        if rawData is None or rawData.strip() == '{}':
-            return None
-        game = object.__new__(cls)
-        game.rawData = rawData
+    def __new__(cls, eid=None, fpath=None, **kwargs):
+        logger.info("EID: {}".format(eid))
+        if eid is not None:
+            game_starting_soon, schedule_info = _infer_gc_json_available(eid)
 
-        try:
-            if eid is not None:
-                game.eid = eid
-                game.data = json.loads(game.rawData.decode('utf-8'))[game.eid]
-            else:  # For when we have rawData (fpath) and no eid.
-                game.eid = None
-                game.data = json.loads(game.rawData.decode('utf-8'))
-                for k, v in game.data.items():
-                    if isinstance(v, dict):
-                        game.eid = k
-                        game.data = v
-                        break
-                assert game.eid is not None
-        except ValueError:
-            return None
+        if game_starting_soon:
+            try:
+                rawData = _get_json_data(eid, fpath)
+            except urllib.error.URLError:
+                # @TODO - find when this happens, likely never as ln# 868 catches
+                # 404 errors and returns None
+                return None
+        else:
+            if len(schedule_info) == 0:
+                # No game was found in the schedule
+                return None
+
+            gameData = {
+                'home': {
+                    'abbr': schedule_info['home'],
+                    'score': {
+                        'T': 0
+                    }
+                },
+                'away': {
+                    'abbr': schedule_info['away'],
+                    'score': {
+                        'T': 0
+                    }
+                },
+                "gamekey": schedule_info['gamekey'],
+                "qtr": 'Pregame',
+                "gcJsonAvailable": False,
+                "clock": 0
+            }
+
+        game = object.__new__(cls)
+
+        # IF the game isn't starting dump what schedule data we have
+        if not game_starting_soon:
+            game.data = gameData
+            game.eid = eid
+        else:
+            game.rawData = rawData
+            try:
+                if eid is not None:
+                    game.eid = eid
+                    game.data = json.loads(game.rawData.decode('utf-8'))[game.eid]
+                else:  # For when we have rawData (fpath) and no eid.
+                    game.eid = None
+                    game.data = json.loads(game.rawData.decode('utf-8'))
+                    for k, v in game.data.items():
+                        if isinstance(v, dict):
+                            game.eid = k
+                            game.data = v
+                            break
+                    assert game.eid is not None
+                game.data['gcJsonAvailable'] = True
+            except ValueError:
+                return None
 
         return game
 
-    def __init__(self, eid=None, fpath=None):
+    def __init__(self, eid=None, fpath=None, **kwargs):
         """
         Creates a new Game instance given a game identifier.
 
@@ -297,41 +348,44 @@ class Game (object):
         # Home and team cumulative statistics.
         self.home = self.data['home']['abbr']
         self.away = self.data['away']['abbr']
-        self.stats_home = _json_team_stats(self.data['home']['stats']['team'])
-        self.stats_away = _json_team_stats(self.data['away']['stats']['team'])
-
-        # Load up some simple static values.
         self.gamekey = nflgame.sched.games[self.eid]['gamekey']
         self.time = GameClock(self.data['qtr'], self.data['clock'])
-        self.down = _tryint(self.data['down'])
-        self.togo = _tryint(self.data['togo'])
         self.score_home = int(self.data['home']['score']['T'])
         self.score_away = int(self.data['away']['score']['T'])
-        for q in (1, 2, 3, 4, 5):
-            for team in ('home', 'away'):
-                score = self.data[team]['score'][str(q)]
-                self.__dict__['score_%s_q%d' % (team, q)] = int(score)
+        self.gcJsonAvailable = self.data['gcJsonAvailable']
 
-        if not self.game_over():
-            self.winner = None
-        else:
-            if self.score_home > self.score_away:
-                self.winner = self.home
-                self.loser = self.away
-            elif self.score_away > self.score_home:
-                self.winner = self.away
-                self.loser = self.home
+        if(self.data['gcJsonAvailable']):
+            self.stats_home = _json_team_stats(self.data['home']['stats']['team'])
+            self.stats_away = _json_team_stats(self.data['away']['stats']['team'])
+
+            # Load up some simple static values.
+            self.down = _tryint(self.data['down'])
+            self.togo = _tryint(self.data['togo'])
+            for q in (1, 2, 3, 4, 5):
+                for team in ('home', 'away'):
+                    score = self.data[team]['score'][str(q)]
+                    self.__dict__['score_%s_q%d' % (team, q)] = int(score)
+
+            if not self.game_over():
+                self.winner = None
             else:
-                self.winner = '%s/%s' % (self.home, self.away)
-                self.loser = '%s/%s' % (self.home, self.away)
+                if self.score_home > self.score_away:
+                    self.winner = self.home
+                    self.loser = self.away
+                elif self.score_away > self.score_home:
+                    self.winner = self.away
+                    self.loser = self.home
+                else:
+                    self.winner = '%s/%s' % (self.home, self.away)
+                    self.loser = '%s/%s' % (self.home, self.away)
 
-        # Load the scoring summary into a simple list of strings.
-        self.scores = []
-        for k in sorted(map(int, self.data['scrsummary'])):
-            play = self.data['scrsummary'][str(k)]
-            s = '%s - Q%d - %s - %s' \
-                % (play['team'], play['qtr'], play['type'], play['desc'])
-            self.scores.append(s)
+            # Load the scoring summary into a simple list of strings.
+            self.scores = []
+            for k in sorted(map(int, self.data['scrsummary'])):
+                play = self.data['scrsummary'][str(k)]
+                s = '%s - Q%d - %s - %s' \
+                    % (play['team'], play['qtr'], play['type'], play['desc'])
+                self.scores.append(s)
 
         # Check to see if the game is over, and if so, cache the data.
         if self.game_over() and not os.access(_jsonf % eid, os.R_OK):
@@ -368,7 +422,7 @@ class Game (object):
             with gzip.open(fpath, 'w+') as outfile:
                 outfile.write(self.rawData)
         except IOError:
-            print("Could not cache JSON data. Please " \
+            logger.info("Could not cache JSON data. Please " \
                                  "make '%s' writable." \
                                  % os.path.dirname(fpath), file=sys.stderr)
 
@@ -394,6 +448,8 @@ class Game (object):
         wrong (particularly for stats that are in both play-by-play data
         and game statistics), but does not eliminate them.
         """
+        if not self.gcJsonAvailable:
+            return {}
         game_players = list(self.players)
         play_players = list(self.drives.plays().players())
         max_players = OrderedDict()
@@ -825,14 +881,41 @@ def _get_json_data(eid=None, fpath=None):
 
     fpath = _jsonf % eid
     if os.access(fpath, os.R_OK):
+        logger.info("_get_json_data: json cache found, returning cached data ")
         return gzip.open(fpath).read()
     try:
+        logger.info("_get_json_data: firing request")
         return urllib.request.urlopen(_json_base_url % (eid, eid), timeout=5).read()
     except urllib.error.HTTPError:
         pass
     except socket.timeout:
         pass
+
+    logger.info("_get_json_data: Failed request, returning None")
     return None
+
+
+def _infer_gc_json_available(eid):
+    """
+    Check to see if the game-center json even has a chance to be available, i.e.
+    the game starts in <= 10 minutes.  This is used to prevent superfluous calls 
+    to the nfl api.
+
+    returns a tuple - True/False if the game is about to start and the schedule data
+    """
+    logger.info("Checking to see if the game exists in the schedule")
+    schedule_info = nflgame._search_schedule(eid=eid)
+    if len(schedule_info) == 0:
+        logger.info("No game found")
+        #No game found
+        return False, []
+
+    gametime = nflgame.live._game_datetime(schedule_info)
+    now = nflgame.live._now()
+
+    game_starting_soon = (gametime - now).total_seconds() <= 600
+    logger.info("Game Starting Soon Check: {}".format(game_starting_soon))
+    return  game_starting_soon, schedule_info
 
 
 def _tryint(v):
