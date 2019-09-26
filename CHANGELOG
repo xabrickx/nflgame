@@ -1,6 +1,8 @@
 2.0.1
 ======
-  - Updated to support Python 3
+  - Dropping python 2 support
+  - nflgame.games() will return schedule data if game-center json is unavailable
+  - Using new feeds-rs for determining current season phase (removed scheduling logic)
   - Replaced httplib2 with more modern requests library
   - Replaced scheduling logic w/ feeds-rs current week api call
 
