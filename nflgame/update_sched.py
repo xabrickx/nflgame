@@ -38,10 +38,6 @@ def schedule_url(year, stype, week):
     `[0, 17]`.
     """
     xmlurl = 'http://www.nfl.com/ajax/scorestrip?'
-    if stype == 'POST':
-        week += 17
-        if week == 21:  # NFL.com you so silly
-            week += 1
     return '%sseason=%d&seasonType=%s&week=%d' % (xmlurl, year, stype, week)
 
 
