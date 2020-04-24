@@ -362,9 +362,13 @@ def _update_week_number():
 
     if (curWeekResponse.ok):
         curWeekJson = curWeekResponse.json()
-        _cur_week = curWeekJson['week']
+        week = curWeekJson['week']
+        phase = curWeekJson['seasonType']
+        if phase == "POST" or phase == "PRO":
+            week -= 17
+        _cur_week = week
+        _cur_season_phase = phase
         _cur_year = curWeekJson['seasonId']
-        _cur_season_phase = curWeekJson['seasonType']
 
     # return the time for calculating when to check 
     return time.time()
