@@ -66,8 +66,8 @@ import nflgame
 games = nflgame.games(2013, week=1)
 players = nflgame.combine_game_stats(games)
 for p in players.rushing().sort('rushing_yds').limit(5):
-    msg = '%s %d carries for %d yards and %d TDs'
-    print msg % (p, p.rushing_att, p.rushing_yds, p.rushing_tds)
+    msg = '{} {} carries for {} yards and {} TDs'
+    print( msg.format(p, p.rushing_att, p.rushing_yds, p.rushing_tds))
 ```
 
 And the output is:
@@ -103,12 +103,10 @@ And the output is:
 
 ### I want a database!
 
-Then you should check out my new project,
-[nfldb](https://github.com/BurntSushi/nfldb).
-It uses nflgame to populate a database, which is then much faster to search
-than nflgame's JSON data files.
+Stay TUNED! I will be bringing [nfldb](https://github.com/BurntSushi/nfldb) up-to-date w/ python3, etc.
+I greatly welcome anyone to help contribute to this effort.  The timeline will be *roughly* by the 2020 season.
 
-You may also be interested in combining
+### Other related projects of [Andrew Gallant's](https://github.com/BurntSushi)...
 [nflvid](https://github.com/BurntSushi/nflvid)
 with nfldb to
 [search and watch video of
