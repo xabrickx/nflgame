@@ -365,8 +365,15 @@ def run():
         if args.week is not None:
             week = args.week
 
+
+        try:
+            games = nflgame.games(year, week, kind=phase)
+        except TypeError:
+            eprint('No games this week')
+            return
+
         eprint('Loading games for %s %d week %d' % (phase, year, week))
-        games = nflgame.games(year, week, kind=phase)
+
         players = dict(players_from_games(metas, games))
 
     # Find the profile ID for each new player.
