@@ -10,9 +10,6 @@ nflgame is an API to retrieve and read NFL data feeds.
 It can work with real-time data, which can be used for fantasy football.
 
 ### Installation
-
-python3 implementation is in beta --- `pip install nflgame-redux==2.0.1b1`.
-
 **this project is no longer python2 compatible.**.  The old python2 (<1.2.20) branch *should* work but... come on now... just [upgrade](https://docs.python.org/2/library/2to3.html).
 
 1. Create a && activate a python3 venv
@@ -34,6 +31,7 @@ nflgame-update-players
 ```
 
 ### Documentation and getting help
+If you need help, please come visit us in discord on channel `https://discord.gg/G7uay2`.
 
 If you aren't a programmer, then the
 [tutorial for non
