@@ -20,7 +20,7 @@ python3 implementation is in beta --- `pip install nflgame-redux==2.0.1b1`.
 2. In your **python 3** virtualenv...
 
 ```
-pip install nflgame-redux==2.0.1b1
+pip install nflgame-redux
 ```
 
 3. Update players
