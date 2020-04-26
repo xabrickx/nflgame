@@ -106,8 +106,11 @@ And the output is:
 
 ### I want a database!
 
-Stay TUNED! I will be bringing [nfldb](https://github.com/BurntSushi/nfldb) up-to-date w/ python3, etc.
-I greatly welcome anyone to help contribute to this effort.  The timeline will be *roughly* by the 2020 season.
+Great news! I've pulled nfldb into python3 and it comes with nflgame 2.0 already installed.  It even has an example docker image that should get everyone up and running pretty quick.
+
+* [Project Page](https://github.com/derek-adair/nfldb)
+* [PyPi listing](https://pypi.org/project/nfldb-redux/)
+
 
 ### Other related projects of [Andrew Gallant's](https://github.com/BurntSushi)...
 [nflvid](https://github.com/BurntSushi/nflvid)
@@ -115,7 +118,7 @@ with nfldb to
 [search and watch video of
 plays](https://github.com/BurntSushi/nfldb/wiki/Watching-videos-of-plays-with-nflvid).
 
-### Updating the player database (e.g., rosters)
+### Updating the player json (e.g., rosters)
 
 Since player meta data (like a player's team, position or status) changes
 throughout the season, the JSON database included with nflgame needs to be
