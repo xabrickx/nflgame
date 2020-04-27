@@ -119,7 +119,8 @@ def gsis_id(profile_url):
 
 
 def roster_soup(team):
-    resp = requests.get(urls['roster'], params={'team':team})
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36"}
+    resp = requests.get(urls['roster'], params={'team':team}, headers=headers
     if resp.status_code != 200:
         return None
     return BeautifulSoup(resp.text, PARSER)
