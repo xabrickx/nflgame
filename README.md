@@ -3,7 +3,7 @@
 A maintained fork of
 [nflgame](https://github.com/BurntSushi/nflgame/)
 ================
-**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** drop-in replacement for [nflgame](https://pypi.org/project/nflgame) so as to easily use with projects like [nfldb](https://github.com/BurntSushi/nfldb).
+**Currently releasing under [nflgame-redux](https://pypi.org/project/nflgame-redux/)** drop-in replacement for [nflgame](https://pypi.org/project/nflgame) so as to easily use with projects like [nfldb](https://github.com/derek-adair/nfldb).
 
 ### Purpose
 nflgame is an API to retrieve and read NFL data feeds.
