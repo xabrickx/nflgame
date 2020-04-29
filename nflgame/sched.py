@@ -34,8 +34,7 @@ def check_missing_weeks(sched, year, phase):
         stored_week = (year, info['season_type'], info['week'])
         stored_weeks.add(stored_week)
 
-    for stored_week in stored_weeks:
-        missing_weeks.remove(stored_week)
+    if stored_week in stored_weeks: stored_weeks.remove(stored_week)
 
     return missing_weeks
 

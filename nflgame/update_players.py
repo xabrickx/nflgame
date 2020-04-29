@@ -119,7 +119,8 @@ def gsis_id(profile_url):
 
 
 def roster_soup(team):
-    resp = requests.get(urls['roster'], params={'team':team})
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36"}
+    resp = requests.get(urls['roster'], params={'team':team}, headers=headers)
     if resp.status_code != 200:
         return None
     return BeautifulSoup(resp.text, PARSER)
@@ -365,8 +366,15 @@ def run():
         if args.week is not None:
             week = args.week
 
+
+        try:
+            games = nflgame.games(year, week, kind=phase)
+        except TypeError:
+            eprint('No games this week')
+            return
+
         eprint('Loading games for %s %d week %d' % (phase, year, week))
-        games = nflgame.games(year, week, kind=phase)
+
         players = dict(players_from_games(metas, games))
 
     # Find the profile ID for each new player.
@@ -455,13 +463,13 @@ def run():
 
         def fetch(t):
             gid, purl = t
-            resp, content = new_http().request(purl, 'GET')
-            if resp['status'] != '200':
-                if resp['status'] == '404':
+            resp = requests.get(purl)
+            if resp.status_code != '200':
+                if resp.status_code == '404':
                     return gid, purl, False
                 else:
                     return gid, purl, None
-            return gid, purl, content
+            return gid, purl, resp.content
         for i, (gid, purl, html) in enumerate(pool.imap(fetch, gids), 1):
             progress(i, len(gids))
             more_meta = meta_from_profile_html(html)

@@ -10,10 +10,14 @@ nflgame is an API to retrieve and read NFL data feeds.
 It can work with real-time data, which can be used for fantasy football.
 
 ### Installation
+**this project is no longer python2 compatible.**.  The old python2 (<1.2.20) branch *should* work but... come on now... just [upgrade](https://docs.python.org/2/library/2to3.html).
 
-[python3 implementation is on our radar](https://github.com/derek-adair/nflgame/tree/py3), this project is dropping python 2 support **effective immediately**.
+1. Create a && activate a python3 venv
+   ```
+   python3 -m venv ~/python3
+   source ~/python3/bin/activate
+   ```
 
-1. Install [virtualenv](https://virtualenv.pypa.io/en/stable/installation/) and make sure it's [activated](https://virtualenv.pypa.io/en/stable/userguide/).
 
 2. In your **python 3** virtualenv...
 
@@ -27,6 +31,7 @@ nflgame-update-players
 ```
 
 ### Documentation and getting help
+If you need help, please come visit us in discord on channel `https://discord.gg/G7uay2`.
 
 If you aren't a programmer, then the
 [tutorial for non
@@ -64,8 +69,8 @@ import nflgame
 games = nflgame.games(2013, week=1)
 players = nflgame.combine_game_stats(games)
 for p in players.rushing().sort('rushing_yds').limit(5):
-    msg = '%s %d carries for %d yards and %d TDs'
-    print msg % (p, p.rushing_att, p.rushing_yds, p.rushing_tds)
+    msg = '{} {} carries for {} yards and {} TDs'
+    print( msg.format(p, p.rushing_att, p.rushing_yds, p.rushing_tds))
 ```
 
 And the output is:
@@ -101,18 +106,19 @@ And the output is:
 
 ### I want a database!
 
-Then you should check out my new project,
-[nfldb](https://github.com/BurntSushi/nfldb).
-It uses nflgame to populate a database, which is then much faster to search
-than nflgame's JSON data files.
+Great news! I've pulled nfldb into python3 and it comes with nflgame 2.0 already installed.  It even has an example docker image that should get everyone up and running pretty quick.
 
-You may also be interested in combining
+* [Project Page](https://github.com/derek-adair/nfldb)
+* [PyPi listing](https://pypi.org/project/nfldb-redux/)
+
+
+### Other related projects of [Andrew Gallant's](https://github.com/BurntSushi)...
 [nflvid](https://github.com/BurntSushi/nflvid)
 with nfldb to
 [search and watch video of
 plays](https://github.com/BurntSushi/nfldb/wiki/Watching-videos-of-plays-with-nflvid).
 
-### Updating the player database (e.g., rosters)
+### Updating the player json (e.g., rosters)
 
 Since player meta data (like a player's team, position or status) changes
 throughout the season, the JSON database included with nflgame needs to be
@@ -147,3 +153,9 @@ from an entire season:
 ```python
 nflgame.combine(nflgame.games(2010)).csv('season2010.csv')
 ```
+
+### Contributing (WIP)
+* All active development takes place on the "dev" branch.  This is where pull requests should be submitted against.
+* Bug fixes for released versions should be submitted against "master" branch and will get merged accordingly.
+* This project will stick to [Semantic Versioning](https://semver.org/)
+* Tests are *greatly* encouraged but not required.

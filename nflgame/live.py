@@ -356,13 +356,19 @@ def _now():
 def _update_week_number():
     global _cur_week, _cur_year, _cur_season_phase
 
-    curWeekResponse = requests.get(_CURRENT_WEEK_ENDPOINT)
+    # requests.get is throwing a 403 w/o setting the user agent
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+    curWeekResponse = requests.get(_CURRENT_WEEK_ENDPOINT, headers=headers)
 
     if (curWeekResponse.ok):
         curWeekJson = curWeekResponse.json()
-        _cur_week = curWeekJson['week']
+        week = curWeekJson['week']
+        phase = curWeekJson['seasonType']
+        if phase == "POST" or phase == "PRO":
+            week -= 17
+        _cur_week = week
+        _cur_season_phase = phase
         _cur_year = curWeekJson['seasonId']
-        _cur_season_phase = curWeekJson['seasonType']
 
     # return the time for calculating when to check 
     return time.time()

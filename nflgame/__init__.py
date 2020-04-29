@@ -67,15 +67,11 @@ And the output is:
 If you aren't a programmer, then the
 [tutorial for non programmers](http://goo.gl/y05fVj) is for you.
 
-If you need help, please come visit us at IRC/FreeNode on channel `#nflgame`.
-If you've never used IRC before, then you can
-[use a web client](http://webchat.freenode.net/?channels=%23nflgame).
-(Enter any nickname you like, make sure the channel is `#nflgame`, fill in
-the captcha and hit connect.)
+If you need help, please come visit us in discord on channel `https://discord.gg/G7uay2`.
 
-Failing IRC, the second fastest way to get help is to
+Failing discord, the second fastest way to get help is to
 [open a new issue on the
-tracker](https://github.com/BurntSushi/nflgame/issues/new).
+tracker](https://github.com/derek-adair/nflgame/issues/new).
 There are several active contributors to nflgame that watch the issue tracker.
 We tend to respond fairly quickly!
 """
@@ -126,7 +122,7 @@ teams = [
     ['GB', 'Green Bay', 'Packers', 'Green Bay Packers', 'GNB'],
     ['HOU', 'Houston', 'Texans', 'Houston Texans'],
     ['IND', 'Indianapolis', 'Colts', 'Indianapolis Colts'],
-    ['JAC', 'Jacksonville', 'Jaguars', 'Jacksonville Jaguars', 'JAX'],
+    ['JAX', 'Jacksonville', 'Jaguars', 'Jacksonville Jaguars', 'JAC'],
     ['KC', 'Kansas City', 'Chiefs', 'Kansas City Chiefs', 'KAN'],
     ['LA', 'Los Angeles', 'Rams', 'Los Angeles Rams', 'LAR'],
     ['SD', 'San Diego', 'Chargers', 'San Diego Chargers', 'SDG'],
