@@ -357,23 +357,33 @@ def run():
                 players[pid] = name
         eprint('Done.')
     else:
-        year, week = nflgame.live.current_year_and_week()
         phase = nflgame.live._cur_season_phase
+        eprint("Fetching games for...")
         if args.phase is not None:
             phase = args.phase
+        else:
+            phase = "REG"
+
+        eprint("Phase - {}".format(phase))
         if args.year is not None:
             year = args.year
+        else:
+            year, ignore_me = nflgame.live.current_year_and_week()
+
+        eprint("Year - {}".format(year))
+
+        week = None
         if args.week is not None:
             week = args.week
+            eprint("Week - {}".format(week))
 
 
         try:
             games = nflgame.games(year, week, kind=phase)
+            eprint("{} games found".format(len(games)))
         except TypeError:
-            eprint('No games this week')
+            eprint('No games found')
             return
-
-        eprint('Loading games for %s %d week %d' % (phase, year, week))
 
         players = dict(players_from_games(metas, games))
 
