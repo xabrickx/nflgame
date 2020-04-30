@@ -159,3 +159,5 @@ nflgame.combine(nflgame.games(2010)).csv('season2010.csv')
 * Bug fixes for released versions should be submitted against "master" branch and will get merged accordingly.
 * This project will stick to [Semantic Versioning](https://semver.org/)
 * Tests are *greatly* encouraged but not required.
+
+**Authored by [Andrew Gallant](https://burntsushi.net) maintained by [Derek Adair](https://derekadair.com)**
