@@ -4,11 +4,11 @@ import time
 import json
 import os
 import sys
-import urllib.request, urllib.error, urllib.parse
 from collections import OrderedDict
 import xml.dom.minidom as xml
 
 import nflgame
+from nflgame.http_requests import NflRequest, NflResponse, NflRequestHTTPError
 
 
 def year_phase_week(year=None, phase=None, week=None):
@@ -54,8 +54,9 @@ def week_schedule(year, stype, week):
     """
     url = schedule_url(year, stype, week)
     try:
-        dom = xml.parse(urllib.request.urlopen(url))
-    except urllib.error.HTTPError:
+        response_xml = NflRequest(url=url).get().body
+        dom = xml.parseString(response_xml)
+    except NflRequestHTTPError:
         print >> sys.stderr, 'Could not load %s' % url
         return []
 

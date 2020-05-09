@@ -47,7 +47,6 @@ import os
 import re
 import sys
 import traceback
-import requests
 
 from bs4 import BeautifulSoup
 
@@ -64,6 +63,7 @@ except ImportError:
 import nflgame
 import nflgame.live
 import nflgame.player
+from nflgame.http_requests import NflRequest, NflResponse
 
 urls = {
     'roster': 'http://www.nfl.com/teams/roster',
@@ -96,7 +96,7 @@ def profile_id_from_url(url):
 
 
 def profile_url(gsis_id):
-    resp = requests.head(urls['gsis_profile'], params={'id':gsis_id})
+    resp = NflRequest(url=urls['gsis_profile']).head(params={'id':gsis_id})
     if resp.status_code != 301:
         return None
     loc = resp.headers['location']
@@ -106,7 +106,8 @@ def profile_url(gsis_id):
 
 
 def gsis_id(profile_url):
-    resp = requests.get(profile_url)
+    resp = NflRequest(url=profile_url).get()
+
     if resp.status_code != 200:
         return None
     m = re.search('GSIS\s+ID:\s+([0-9-]+)', resp.text)
@@ -119,8 +120,8 @@ def gsis_id(profile_url):
 
 
 def roster_soup(team):
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36"}
-    resp = requests.get(urls['roster'], params={'team':team}, headers=headers)
+    resp = NflRequest(url=urls['roster']).get(params={'team':team}) 
+
     if resp.status_code != 200:
         return None
     return BeautifulSoup(resp.text, PARSER)
@@ -473,7 +474,7 @@ def run():
 
         def fetch(t):
             gid, purl = t
-            resp = requests.get(purl)
+            resp = NflRequest(url=purl).get()
             if resp.status_code != '200':
                 if resp.status_code == '404':
                     return gid, purl, False

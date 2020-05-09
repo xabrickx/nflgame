@@ -16,6 +16,7 @@ import nflgame.sched
 import nflgame.seq
 import nflgame.statmap
 import nflgame.live
+from nflgame.http_requests import NflRequest, NflResponse, NflRequestHTTPError, NflRequestTimedOut
 
 try:
     import pytz
@@ -885,10 +886,10 @@ def _get_json_data(eid=None, fpath=None):
         return gzip.open(fpath).read()
     try:
         logger.info("_get_json_data: firing request")
-        return urllib.request.urlopen(_json_base_url % (eid, eid), timeout=5).read()
-    except urllib.error.HTTPError:
+        return NflRequest(url=_json_base_url % (eid, eid)).get(timeout=5).body
+    except NflRequestHTTPError:
         pass
-    except socket.timeout:
+    except NflRequestTimedOut:
         pass
 
     logger.info("_get_json_data: Failed request, returning None")

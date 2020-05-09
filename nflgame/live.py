@@ -32,9 +32,10 @@ theoretically keep it running for the entire season.
 import datetime
 import time
 import math
-import requests
 import logging
 import os
+# import requests 
+from nflgame.http_requests import NflRequest, NflResponse
 
 try:
     import pytz
@@ -356,11 +357,10 @@ def _now():
 def _update_week_number():
     global _cur_week, _cur_year, _cur_season_phase
 
-    # requests.get is throwing a 403 w/o setting the user agent
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-    curWeekResponse = requests.get(_CURRENT_WEEK_ENDPOINT, headers=headers)
-
-    if (curWeekResponse.ok):
+    curWeekResponse = NflRequest(url=_CURRENT_WEEK_ENDPOINT).get()
+    
+    # Emulate requests.codes.ok which was previously in place
+    if (curWeekResponse.status_code <= 200):
         curWeekJson = curWeekResponse.json()
         week = curWeekJson['week']
         phase = curWeekJson['seasonType']
