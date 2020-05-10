@@ -13,10 +13,8 @@ class NflRequestTest(unittest.TestCase):
     URL_BASIC = "https://gist.githubusercontent.com/xabrickx/7a3085ecdcf6f6467128436463e59fd9/raw/c5261e779f38cb3ae73f29c2ca258a932ec71120/2019122300.json"
     # Official nfl.com url for testing
     URL_NFL = "http://www.nfl.com/player/joethomas/2507162/profile"
-
     TIMEOUT_BASIC = 7 
     TIMEOUT_BARE = 7777
-
 
     def test_bare_init(self):
         """ Test creation of the base class and that it contains defaults needed for bare functionality"""
@@ -85,8 +83,6 @@ class NflRequestTest(unittest.TestCase):
         expected_response = request_test.head()
         self.assertTrue(hasattr(expected_response, "status_code"))
         self.assertEqual(expected_response.status_code, 200)
-
-        
 
 if __name__ == '__main__':
     unittest.main()
